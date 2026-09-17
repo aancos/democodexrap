@@ -1,0 +1,10 @@
+{
+  "BASEINFO": {
+    "FROM": [
+      "ZDEMO_RAP_REQ_I"
+    ],
+    "ASSOCIATED": [
+      "ZDEMO_I_REQUEST"
+    ]
+  }
+}

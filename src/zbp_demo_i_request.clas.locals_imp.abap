@@ -160,21 +160,48 @@ CLASS lhc_Item IMPLEMENTATION.
           CurrencyCode = VALUE #( parents[ RequestUuid = key-RequestUuid ]-CurrencyCode OPTIONAL ) ) ).
   ENDMETHOD.
 
-  METHOD RecalculateTotal.
-    DATA request_keys TYPE TABLE FOR READ IMPORT zdemo_i_request\Request.
-    request_keys = VALUE #( FOR GROUPS request OF key IN keys
-      GROUP BY key-RequestUuid ( RequestUuid = request ) ).
-    READ ENTITIES OF zdemo_i_request IN LOCAL MODE
-      ENTITY Request BY \_Item FIELDS ( EstimatedCost ) WITH request_keys
-        RESULT DATA(items).
-    LOOP AT request_keys ASSIGNING FIELD-SYMBOL(<request_key>).
-      DATA(total) = REDUCE zdemo_rap_req_h-total_amount(
-        INIT sum = CONV zdemo_rap_req_h-total_amount( 0 )
-        FOR item IN items WHERE ( RequestUuid = <request_key>-RequestUuid )
-        NEXT sum += item-EstimatedCost ).
-      MODIFY ENTITIES OF zdemo_i_request IN LOCAL MODE
-        ENTITY Request UPDATE FIELDS ( TotalAmount )
-        WITH VALUE #( ( RequestUuid = <request_key>-RequestUuid TotalAmount = total ) ).
+METHOD RecalculateTotal.
+
+  DATA request_keys
+    TYPE TABLE FOR READ IMPORT zdemo_i_request\_Item.
+
+  request_keys = VALUE #(
+    FOR GROUPS request_uuid OF key IN keys
+    GROUP BY key-RequestUuid
+    (
+      RequestUuid = request_uuid
+    )
+  ).
+
+  READ ENTITIES OF zdemo_i_request IN LOCAL MODE
+    ENTITY Request BY \_Item
+      FIELDS ( EstimatedCost )
+      WITH request_keys
+      RESULT DATA(items).
+
+  LOOP AT request_keys ASSIGNING FIELD-SYMBOL(<request_key>).
+
+    DATA total TYPE zdemo_rap_req_h-total_amount.
+    CLEAR total.
+
+    LOOP AT items ASSIGNING FIELD-SYMBOL(<item>)
+      WHERE RequestUuid = <request_key>-RequestUuid.
+
+      total = total + <item>-EstimatedCost.
+
     ENDLOOP.
-  ENDMETHOD.
+
+    MODIFY ENTITIES OF zdemo_i_request IN LOCAL MODE
+      ENTITY Request
+        UPDATE FIELDS ( TotalAmount )
+        WITH VALUE #(
+          (
+            RequestUuid = <request_key>-RequestUuid
+            TotalAmount = total
+          )
+        ).
+
+  ENDLOOP.
+
+ENDMETHOD.
 ENDCLASS.
