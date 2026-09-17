@@ -1,0 +1,6 @@
+@EndUserText.label: 'Analysis Request UI Service'
+define service ZDEMO_UI_REQUEST {
+  expose ZDEMO_C_Request as Requests;
+  expose ZDEMO_C_RequestItem as RequestItems;
+}
+

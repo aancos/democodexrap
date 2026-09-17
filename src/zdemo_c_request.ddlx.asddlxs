@@ -1,0 +1,47 @@
+@Metadata.layer: #CORE
+@UI.headerInfo: {
+  typeName: 'Solicitud',
+  typeNamePlural: 'Solicitudes',
+  title: { value: 'Title' },
+  description: { value: 'Area' }
+}
+annotate entity ZDEMO_C_Request with
+{
+  @UI.facet: [
+    { id: 'General', type: #IDENTIFICATION_REFERENCE, label: 'Datos generales', position: 10 },
+    { id: 'Items', type: #LINEITEM_REFERENCE, label: 'Posiciones', position: 20, targetElement: '_Item' }
+  ]
+  @UI.hidden: true
+  RequestUuid;
+
+  @UI.lineItem: [ { position: 10 } ]
+  @UI.identification: [ { position: 10 } ]
+  Title;
+
+  @UI.lineItem: [ { position: 20 } ]
+  @UI.identification: [ { position: 20 } ]
+  Area;
+
+  @UI.lineItem: [ { position: 30 } ]
+  @UI.identification: [ { position: 30 } ]
+  Priority;
+
+  @UI.lineItem: [ { position: 40 } ]
+  @UI.identification: [
+    { position: 40 },
+    { type: #FOR_ACTION, dataAction: 'Approve', label: 'Aprobar', position: 80 },
+    { type: #FOR_ACTION, dataAction: 'Reject', label: 'Rechazar', position: 90 }
+  ]
+  Status;
+
+  @UI.lineItem: [ { position: 50 } ]
+  @UI.identification: [ { position: 50 } ]
+  RequiredDate;
+
+  @UI.lineItem: [ { position: 60 } ]
+  @UI.identification: [ { position: 60 } ]
+  TotalAmount;
+
+  @UI.identification: [ { position: 70 } ]
+  CurrencyCode;
+}

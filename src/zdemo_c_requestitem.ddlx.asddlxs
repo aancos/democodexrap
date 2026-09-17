@@ -1,0 +1,21 @@
+@Metadata.layer: #CORE
+annotate entity ZDEMO_C_RequestItem with
+{
+  @UI.hidden: true
+  RequestUuid;
+  @UI.hidden: true
+  ItemUuid;
+  @UI.lineItem: [ { position: 10 } ]
+  ItemNumber;
+  @UI.lineItem: [ { position: 20 } ]
+  Description;
+  @UI.lineItem: [ { position: 30 } ]
+  Quantity;
+  @UI.lineItem: [ { position: 40 } ]
+  Unit;
+  @UI.lineItem: [ { position: 50 } ]
+  EstimatedCost;
+  @UI.lineItem: [ { position: 60 } ]
+  Status;
+}
+

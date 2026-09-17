@@ -1,0 +1,91 @@
+managed implementation in class zbp_demo_i_request unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZDEMO_I_Request alias Request
+persistent table zdemo_rap_req_h
+draft table zdemo_rap_rqh_d
+lock master total etag LastChangedAt
+authorization master ( instance )
+etag master LocalLastChangedAt
+{
+  create;
+  update;
+  delete;
+
+  field ( numbering : managed, readonly ) RequestUuid;
+  field ( readonly ) TotalAmount, CreatedBy, CreatedAt,
+                     LastChangedBy, LastChangedAt, LocalLastChangedAt;
+  field ( mandatory ) Title, Area, RequiredDate, CurrencyCode;
+
+  association _Item { create; with draft; }
+
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare {
+    validation ValidateMandatoryFields;
+    validation ValidateRequiredDate;
+  }
+
+  determination InitializeRequest on modify { create; }
+  validation ValidateMandatoryFields on save { create; update; field Title, Area; }
+  validation ValidateRequiredDate on save { create; update; field RequiredDate; }
+
+  action ( features : instance ) Approve result [1] $self;
+  action ( features : instance ) Reject result [1] $self;
+
+  mapping for zdemo_rap_req_h {
+    RequestUuid = request_uuid;
+    Title = title;
+    Area = area;
+    Priority = priority;
+    Status = status;
+    RequiredDate = required_date;
+    TotalAmount = total_amount;
+    CurrencyCode = currency_code;
+    CreatedBy = created_by;
+    CreatedAt = created_at;
+    LastChangedBy = last_changed_by;
+    LastChangedAt = last_changed_at;
+    LocalLastChangedAt = local_last_changed_at;
+  }
+}
+
+define behavior for ZDEMO_I_RequestItem alias Item
+persistent table zdemo_rap_req_i
+draft table zdemo_rap_rqi_d
+lock dependent by _Request
+authorization dependent by _Request
+etag master LocalLastChangedAt
+{
+  update;
+  delete;
+
+  field ( numbering : managed, readonly ) ItemUuid;
+  field ( readonly ) RequestUuid, CreatedBy, CreatedAt,
+                     LastChangedBy, LastChangedAt, LocalLastChangedAt;
+  field ( mandatory ) Description, Quantity, Unit, CurrencyCode;
+  association _Request { with draft; }
+
+  determination InitializeItem on modify { create; }
+  determination RecalculateTotal on save { create; delete; field EstimatedCost; }
+
+  mapping for zdemo_rap_req_i {
+    RequestUuid = request_uuid;
+    ItemUuid = item_uuid;
+    ItemNumber = item_number;
+    Description = description;
+    Quantity = quantity;
+    Unit = unit;
+    EstimatedCost = estimated_cost;
+    CurrencyCode = currency_code;
+    Status = status;
+    CreatedBy = created_by;
+    CreatedAt = created_at;
+    LastChangedBy = last_changed_by;
+    LastChangedAt = last_changed_at;
+    LocalLastChangedAt = local_last_changed_at;
+  }
+}
